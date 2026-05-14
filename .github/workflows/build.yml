@@ -1,0 +1,36 @@
+name: Build EXE
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install pygame PyOpenGL numpy pyinstaller
+
+      - name: Build EXE
+        run: pyinstaller --onefile --noconsole --name "DiceOfFate3D" main.py
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/DiceOfFate3D.exe
+          name: "骰子命运 3D ${{ github.ref_name }}"
+          body: |
+            ## 骰子命运 3D ${{ github.ref_name }}
+
+            下载 `DiceOfFate3D.exe` 直接运行，无需安装 Python。
+
+            **系统要求：** Windows 10+，需要显卡驱动支持 OpenGL
